@@ -34,10 +34,15 @@ public class DatabaseConfig {
       "LEFT JOIN song_position sp ON s.song_id = sp.song_id " +
       "LEFT JOIN albums al ON sp.album_id = al.album_id";
 
-  public static final String GET_RANDOM_PLAYLIST = "SELECT s.song_id, s.song_title, a.artist_name " +
-      "FROM songs s " +
-      "JOIN artists a ON s.artist_id = a.artist_id " +
-      "WHERE s.genre_id = ? " +
-      "ORDER BY RANDOM() " +
-      "LIMIT ?";
+  public static final String GET_RANDOM_PLAYLIST = """
+      SELECT s.song_id, s.song_title, a.artist_name,
+             COALESCE(al.album_name, '---') as album_name
+      FROM songs s
+      JOIN artists a ON s.artist_id = a.artist_id
+      LEFT JOIN song_position sp ON s.song_id = sp.song_id
+      LEFT JOIN albums al ON sp.album_id = al.album_id
+      WHERE s.genre_id = ?
+      ORDER BY RANDOM()
+      LIMIT ?
+      """;
 }

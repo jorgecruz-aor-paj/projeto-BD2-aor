@@ -109,17 +109,7 @@ public class Song {
 
     @Override
     public String toString() {
-
-        String title = this.getTitle();
-        String genreName = this.getGenreName();
-        String artistName = this.getArtistName();
-        String albumName = this.getAlbumName();
-
-
-        return String.format(" %-30s %-20s %-20s %-30s", title, genreName, artistName, albumName);
-    }
-
-    public static String getTableHeader() {
-        return String.format("%-30s %-20s %-20s %-30s", "Título", "Género Musical", "Autor", "Álbum");
+        return String.format(" %-30s %-20s %-20s %-30s", this.getTitle(), this.getGenreName(), this.getArtistName(),
+                this.getAlbumName() != null ? this.getAlbumName() : "---");
     }
 }

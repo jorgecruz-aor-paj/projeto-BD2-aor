@@ -142,6 +142,7 @@ public class App implements AutoCloseable {
     private void viewAllSongs() throws SQLException {
         System.out.println("\n=== Todas as músicas===");
         List<Song> songs = songService.getAllSongs();
+        System.out.printf("%-30s %-20s %-20s %-30s\n", "Título", "Género Musical", "Autor", "Álbum");
         for (Song song : songs) {
             System.out.println(song);
         }
@@ -159,8 +160,12 @@ public class App implements AutoCloseable {
 
         List<Song> playlist = playlistService.createRandomPlaylist(genreId, numberOfSongs);
         System.out.println("\nPlaylist gerada:");
+        System.out.printf("%-30s %-20s %-30s\n", "Título", "Autor", "Álbum");
         for (Song song : playlist) {
-            System.out.println(song);
+            System.out.printf("%-30s %-20s %-30s\n",
+                    song.getTitle(),
+                    song.getArtistName(),
+                    song.getAlbumName() != null ? song.getAlbumName() : "---");
         }
     }
 

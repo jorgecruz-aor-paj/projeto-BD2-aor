@@ -31,6 +31,7 @@ public class PlaylistDAO {
           song.setId(rs.getInt("song_id"));
           song.setTitle(rs.getString("song_title"));
           song.setArtistName(rs.getString("artist_name"));
+          song.setAlbumName(rs.getString("album_name"));
           playlist.add(song);
         }
       }
