@@ -14,6 +14,9 @@ public class DatabaseInitializer {
   }
 
   public void populateDatabase() throws SQLException {
+    dropTables();
+    createTables();
+
     // Insert genres
     String[] genres = { "Rock", "Pop", "Jazz", "Classical", "Hip Hop" };
     for (String genre : genres) {
@@ -21,7 +24,12 @@ public class DatabaseInitializer {
     }
 
     // Insert artists
-    String[] artists = { "Queen", "Michael Jackson", "Miles Davis", "Mozart", "Eminem" };
+    String[] artists = {
+        "Queen", "Michael Jackson", "Miles Davis", "Mozart", "Eminem",
+        "Led Zeppelin", "Madonna", "John Coltrane", "Beethoven", "Tupac",
+        "Pink Floyd", "Prince", "Duke Ellington", "Bach", "Dr. Dre",
+        "Rolling Stones", "ABBA", "Charlie Parker", "Tchaikovsky", "Kendrick Lamar"
+    };
     for (String artist : artists) {
       insertArtist(artist);
     }
@@ -32,7 +40,17 @@ public class DatabaseInitializer {
         { "Thriller", "2" },
         { "Kind of Blue", "3" },
         { "Symphony No. 40", "4" },
-        { "The Marshall Mathers LP", "5" }
+        { "The Marshall Mathers LP", "5" },
+        { "Led Zeppelin IV", "6" },
+        { "Like a Prayer", "7" },
+        { "A Love Supreme", "8" },
+        { "Symphony No. 5", "9" },
+        { "All Eyez on Me", "10" },
+        { "The Dark Side of the Moon", "11" },
+        { "Purple Rain", "12" },
+        { "Ellington at Newport", "13" },
+        { "The Well-Tempered Clavier", "14" },
+        { "The Chronic", "15" }
     };
     for (String[] album : albums) {
       insertAlbum(album[0]);
@@ -40,14 +58,100 @@ public class DatabaseInitializer {
 
     // Insert songs and song positions
     Object[][] songs = {
+        // Rock songs
         { "Bohemian Rhapsody", LocalDate.of(1975, 11, 21), 1, 1, 1, 1 },
+        { "Stairway to Heaven", LocalDate.of(1971, 11, 8), 1, 6, 6, 1 },
+        { "Comfortably Numb", LocalDate.of(1979, 11, 30), 1, 11, 11, 1 },
+        { "Start Me Up", LocalDate.of(1981, 8, 14), 1, 16, 16, 1 },
+
+        // Pop songs
         { "Thriller", LocalDate.of(1982, 11, 30), 2, 2, 2, 1 },
+        { "Like a Prayer", LocalDate.of(1989, 3, 3), 2, 7, 7, 1 },
+        { "Purple Rain", LocalDate.of(1984, 6, 25), 2, 12, 12, 1 },
+        { "Dancing Queen", LocalDate.of(1976, 8, 15), 2, 17, 17, 1 },
+
+        // Jazz songs
         { "So What", LocalDate.of(1959, 8, 17), 3, 3, 3, 1 },
+        { "A Love Supreme", LocalDate.of(1964, 12, 9), 3, 8, 8, 1 },
+        { "Take the A Train", LocalDate.of(1941, 2, 15), 3, 13, 13, 1 },
+        { "Now's the Time", LocalDate.of(1945, 11, 26), 3, 18, 18, 1 },
+
+        // Classical songs
         { "Symphony No. 40 in G minor", LocalDate.of(1788, 7, 25), 4, 4, 4, 1 },
-        { "The Real Slim Shady", LocalDate.of(2000, 5, 16), 5, 5, 5, 1 }
+        { "Symphony No. 5", LocalDate.of(1808, 12, 22), 4, 9, 9, 1 },
+        { "Air on G String", LocalDate.of(1717, 1, 1), 4, 14, 14, 1 },
+        { "The Nutcracker Suite", LocalDate.of(1892, 12, 18), 4, 19, 19, 1 },
+
+        // Hip Hop songs
+        { "The Real Slim Shady", LocalDate.of(2000, 5, 16), 5, 5, 5, 1 },
+        { "California Love", LocalDate.of(1995, 12, 3), 5, 10, 10, 1 },
+        { "Nuthin' but a G Thang", LocalDate.of(1992, 11, 19), 5, 15, 15, 1 },
+        { "Alright", LocalDate.of(2015, 3, 15), 5, 20, 20, 1 }
     };
     for (Object[] song : songs) {
       insertSong(song);
+    }
+  }
+
+  private void dropTables() throws SQLException {
+    String[] dropStatements = {
+        "DROP TABLE IF EXISTS song_position CASCADE",
+        "DROP TABLE IF EXISTS songs CASCADE",
+        "DROP TABLE IF EXISTS albums CASCADE",
+        "DROP TABLE IF EXISTS artists CASCADE",
+        "DROP TABLE IF EXISTS genres CASCADE"
+    };
+
+    for (String sql : dropStatements) {
+      try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+        stmt.executeUpdate();
+      }
+    }
+  }
+
+  private void createTables() throws SQLException {
+    String[] createStatements = {
+        """
+            CREATE TABLE genres (
+                genre_id SERIAL PRIMARY KEY,
+                genre_name VARCHAR(50) UNIQUE NOT NULL
+            )
+            """,
+        """
+            CREATE TABLE artists (
+                artist_id SERIAL PRIMARY KEY,
+                artist_name VARCHAR(100) UNIQUE NOT NULL
+            )
+            """,
+        """
+            CREATE TABLE albums (
+                album_id SERIAL PRIMARY KEY,
+                album_name VARCHAR(100) NOT NULL
+            )
+            """,
+        """
+            CREATE TABLE songs (
+                song_id SERIAL PRIMARY KEY,
+                song_title VARCHAR(200) NOT NULL,
+                song_date DATE NOT NULL,
+                genre_id INTEGER REFERENCES genres(genre_id),
+                artist_id INTEGER REFERENCES artists(artist_id)
+            )
+            """,
+        """
+            CREATE TABLE song_position (
+                track_number INTEGER NOT NULL,
+                album_id INTEGER REFERENCES albums(album_id),
+                song_id INTEGER REFERENCES songs(song_id),
+                PRIMARY KEY (album_id, track_number)
+            )
+            """
+    };
+
+    for (String sql : createStatements) {
+      try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+        stmt.executeUpdate();
+      }
     }
   }
 
