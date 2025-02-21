@@ -26,15 +26,15 @@ public class App implements AutoCloseable {
     }
 
     private void showMenu() {
-        System.out.println("\n=== Music Database Management System ===");
-        System.out.println("1. Add new song");
-        System.out.println("2. Update song title");
-        System.out.println("3. Delete song");
-        System.out.println("4. View all songs");
-        System.out.println("5. Create random playlist");
-        System.out.println("6. Initialize database with sample data");
-        System.out.println("0. Exit");
-        System.out.print("Enter your choice: ");
+        System.out.println("\n=== Spoty-AOR ===");
+        System.out.println("1. Adicionar música");
+        System.out.println("2. Mudar titulo de música");
+        System.out.println("3. Apagar música");
+        System.out.println("4. Listar todas as músicas");
+        System.out.println("5. Criar uma playlist aleatória");
+        System.out.println("6. Iniciar a base de dados");
+        System.out.println("0. Sair");
+        System.out.print("Escolha uma opção: ");
     }
 
     private void processChoice(int choice) throws SQLException {
@@ -45,37 +45,37 @@ public class App implements AutoCloseable {
             case 4 -> viewAllSongs();
             case 5 -> createRandomPlaylist();
             case 6 -> initializeDatabase();
-            case 0 -> System.out.println("Goodbye!");
-            default -> System.out.println("Invalid choice. Please try again.");
+            case 0 -> System.out.println("Obrigada por ouvir o Spotify-AOR! Até à próxima");
+            default -> System.out.println("Escolha inválida. Selecione uma opção válida.");
         }
     }
 
     private void initializeDatabase() throws SQLException {
-        System.out.println("\n=== Initializing Database ===");
+        System.out.println("\n=== Iniciando a Base de Dados ===");
         DatabaseInitializer initializer = new DatabaseInitializer(conn);
         initializer.populateDatabase();
-        System.out.println("Database initialized with sample data!");
+        System.out.println("Base de dados iniciada!");
     }
 
     private void addNewSong() throws SQLException {
-        System.out.println("\n=== Add New Song ===");
-        System.out.print("Enter song title: ");
+        System.out.println("\n=== Adicionar Música ===");
+        System.out.print("Nome da música a adicionar: ");
         String title = scanner.nextLine();
 
         displayGenres();
-        System.out.print("Select genre number: ");
+        System.out.print("Selecione o estilo músical: ");
         int genreId = Integer.parseInt(scanner.nextLine());
 
         displayArtists();
-        System.out.print("Select artist number: ");
+        System.out.print("Selecione o autor da música: ");
         int artistId = Integer.parseInt(scanner.nextLine());
 
         Song song = new Song(title, LocalDate.now(), genreId, artistId);
 
-        System.out.print("Is this song part of an album? (y/n): ");
-        if (scanner.nextLine().toLowerCase().equals("y")) {
+        System.out.print("Pretende que esta música faça parte de um albúm? (s/n): ");
+        if (scanner.nextLine().toLowerCase().equals("s")) {
             displayAlbums();
-            System.out.print("Select album number: ");
+            System.out.print("Selecione o nr. do album que deseja adicionar: ");
             int albumId = Integer.parseInt(scanner.nextLine());
             song.setAlbumId(albumId);
 
@@ -85,28 +85,28 @@ public class App implements AutoCloseable {
                 trackStmt.setInt(1, albumId);
                 try (var rs = trackStmt.executeQuery()) {
                     if (rs.next()) {
-                        song.setTrackNumber(rs.getInt("next_track"));
+                        song.setTrackNumber(rs.getInt("Proxima_faixa"));
                     }
                 }
             }
         }
 
         songService.addSong(song);
-        System.out.println("Song added successfully!");
+        System.out.println("Música adicionada com sucesso");
     }
 
     private void updateSongTitle() throws SQLException {
-        System.out.println("\n=== Update Song Title ===");
+        System.out.println("\n=== Mudar Titulo de Música ===");
         displayAvailableSongs();
 
-        System.out.print("Select song number: ");
+        System.out.print("Escolha a música que prentende alterar: ");
         int songId = Integer.parseInt(scanner.nextLine());
 
-        System.out.print("Enter new title: ");
+        System.out.print("Escreva um novo título: ");
         String newTitle = scanner.nextLine();
 
         songService.updateSongTitle(songId, newTitle);
-        System.out.println("Song title updated successfully!");
+        System.out.println("Nome da música alterado com sucesso!");
     }
 
     private void displayAvailableSongs() throws SQLException {
@@ -118,7 +118,7 @@ public class App implements AutoCloseable {
                 """;
         try (var stmt = conn.prepareStatement(sql);
                 var rs = stmt.executeQuery()) {
-            System.out.println("\nAvailable Songs:");
+            System.out.println("\nMúsicas Disponíveis:");
             while (rs.next()) {
                 System.out.printf("%d. %s (by %s)%n",
                         rs.getInt("song_id"),
@@ -129,18 +129,18 @@ public class App implements AutoCloseable {
     }
 
     private void deleteSong() throws SQLException {
-        System.out.println("\n=== Delete Song ===");
+        System.out.println("\n=== Apagar Música ===");
         displayAvailableSongs();
 
-        System.out.print("Select song number: ");
+        System.out.print("Escolha a música que prentende eliminar :");
         int songId = Integer.parseInt(scanner.nextLine());
 
         songService.deleteSong(songId);
-        System.out.println("Song deleted successfully!");
+        System.out.println("Música removida com sucesso");
     }
 
     private void viewAllSongs() throws SQLException {
-        System.out.println("\n=== All Songs ===");
+        System.out.println("\n=== Todas as músicas===");
         List<Song> songs = songService.getAllSongs();
         for (Song song : songs) {
             System.out.println(song);
@@ -148,17 +148,17 @@ public class App implements AutoCloseable {
     }
 
     private void createRandomPlaylist() throws SQLException {
-        System.out.println("\n=== Create Random Playlist ===");
+        System.out.println("\n=== Criar uma nova Playlist ===");
 
         displayGenres();
-        System.out.print("Select genre number: ");
+        System.out.print("Selecione o género para a sua playlist: ");
         int genreId = Integer.parseInt(scanner.nextLine());
 
-        System.out.print("Enter number of songs: ");
+        System.out.print("Quantas músicas pretende adicionar: ");
         int numberOfSongs = Integer.parseInt(scanner.nextLine());
 
         List<Song> playlist = playlistService.createRandomPlaylist(genreId, numberOfSongs);
-        System.out.println("\nGenerated Playlist:");
+        System.out.println("\nPlaylist gerada:");
         for (Song song : playlist) {
             System.out.println(song);
         }
@@ -168,7 +168,7 @@ public class App implements AutoCloseable {
         String sql = "SELECT genre_id, genre_name FROM genres ORDER BY genre_id";
         try (var stmt = conn.prepareStatement(sql);
                 var rs = stmt.executeQuery()) {
-            System.out.println("\nAvailable Genres:");
+            System.out.println("\nGéneros disponíveis:");
             while (rs.next()) {
                 System.out.printf("%d. %s%n", rs.getInt("genre_id"), rs.getString("genre_name"));
             }
@@ -179,7 +179,7 @@ public class App implements AutoCloseable {
         String sql = "SELECT artist_id, artist_name FROM artists ORDER BY artist_id";
         try (var stmt = conn.prepareStatement(sql);
                 var rs = stmt.executeQuery()) {
-            System.out.println("\nAvailable Artists:");
+            System.out.println("\nArtistas Disponíveis:");
             while (rs.next()) {
                 System.out.printf("%d. %s%n", rs.getInt("artist_id"), rs.getString("artist_name"));
             }
@@ -190,7 +190,7 @@ public class App implements AutoCloseable {
         String sql = "SELECT album_id, album_name FROM albums ORDER BY album_id";
         try (var stmt = conn.prepareStatement(sql);
                 var rs = stmt.executeQuery()) {
-            System.out.println("\nAvailable Albums:");
+            System.out.println("\nAlbuns Disponíveis:");
             while (rs.next()) {
                 System.out.printf("%d. %s%n", rs.getInt("album_id"), rs.getString("album_name"));
             }
@@ -213,10 +213,10 @@ public class App implements AutoCloseable {
                 choice = Integer.parseInt(scanner.nextLine());
                 processChoice(choice);
             } catch (NumberFormatException e) {
-                System.out.println("Please enter a valid number.");
+                System.out.println("Introduza um número válido.");
                 choice = -1;
             } catch (SQLException e) {
-                System.out.println("Database error: " + e.getMessage());
+                System.out.println("ERRO AO ACEDER À BASE DE DADOS: " + e.getMessage());
                 choice = -1;
             }
         } while (choice != 0);
@@ -226,7 +226,7 @@ public class App implements AutoCloseable {
         try (App app = new App()) {
             app.run();
         } catch (SQLException e) {
-            System.err.println("Fatal error: " + e.getMessage());
+            System.err.println("ERRO: " + e.getMessage());
         }
     }
 }
