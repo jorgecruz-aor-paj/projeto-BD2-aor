@@ -14,6 +14,7 @@ public class App implements AutoCloseable {
 
     public App() throws SQLException {
         this.conn = DriverManager.getConnection(App.URL, App.USER, App.PASSWORD);
+
     }
 
     private void queryEmployees() throws SQLException {
