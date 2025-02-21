@@ -53,7 +53,7 @@ public class DatabaseInitializer {
         { "The Chronic", "15" }
     };
     for (String[] album : albums) {
-      insertAlbum(album[0]);
+      insertAlbum(album);
     }
 
     // Insert songs and song positions
@@ -62,31 +62,31 @@ public class DatabaseInitializer {
         { "Bohemian Rhapsody", LocalDate.of(1975, 11, 21), 1, 1, 1, 1 },
         { "Stairway to Heaven", LocalDate.of(1971, 11, 8), 1, 6, 6, 1 },
         { "Comfortably Numb", LocalDate.of(1979, 11, 30), 1, 11, 11, 1 },
-        { "Start Me Up", LocalDate.of(1981, 8, 14), 1, 16, 16, 1 },
+        { "Start Me Up", LocalDate.of(1981, 8, 14), 1, 11, 11, 2 }, // Changed album_id from 16 to 11
 
         // Pop songs
         { "Thriller", LocalDate.of(1982, 11, 30), 2, 2, 2, 1 },
         { "Like a Prayer", LocalDate.of(1989, 3, 3), 2, 7, 7, 1 },
         { "Purple Rain", LocalDate.of(1984, 6, 25), 2, 12, 12, 1 },
-        { "Dancing Queen", LocalDate.of(1976, 8, 15), 2, 17, 17, 1 },
+        { "Dancing Queen", LocalDate.of(1976, 8, 15), 2, 12, 12, 2 }, // Changed album_id from 17 to 12
 
         // Jazz songs
         { "So What", LocalDate.of(1959, 8, 17), 3, 3, 3, 1 },
         { "A Love Supreme", LocalDate.of(1964, 12, 9), 3, 8, 8, 1 },
         { "Take the A Train", LocalDate.of(1941, 2, 15), 3, 13, 13, 1 },
-        { "Now's the Time", LocalDate.of(1945, 11, 26), 3, 18, 18, 1 },
+        { "Now's the Time", LocalDate.of(1945, 11, 26), 3, 13, 13, 2 }, // Changed album_id from 18 to 13
 
         // Classical songs
         { "Symphony No. 40 in G minor", LocalDate.of(1788, 7, 25), 4, 4, 4, 1 },
         { "Symphony No. 5", LocalDate.of(1808, 12, 22), 4, 9, 9, 1 },
         { "Air on G String", LocalDate.of(1717, 1, 1), 4, 14, 14, 1 },
-        { "The Nutcracker Suite", LocalDate.of(1892, 12, 18), 4, 19, 19, 1 },
+        { "The Nutcracker Suite", LocalDate.of(1892, 12, 18), 4, 14, 14, 2 }, // Changed album_id from 19 to 14
 
         // Hip Hop songs
         { "The Real Slim Shady", LocalDate.of(2000, 5, 16), 5, 5, 5, 1 },
         { "California Love", LocalDate.of(1995, 12, 3), 5, 10, 10, 1 },
         { "Nuthin' but a G Thang", LocalDate.of(1992, 11, 19), 5, 15, 15, 1 },
-        { "Alright", LocalDate.of(2015, 3, 15), 5, 20, 20, 1 }
+        { "Alright", LocalDate.of(2015, 3, 15), 5, 15, 15, 2 } // Changed album_id from 20 to 15
     };
     for (Object[] song : songs) {
       insertSong(song);
@@ -171,10 +171,11 @@ public class DatabaseInitializer {
     }
   }
 
-  private void insertAlbum(String albumName) throws SQLException {
-    String sql = "INSERT INTO albums (album_name) VALUES (?)";
+  private void insertAlbum(String[] albumData) throws SQLException {
+    String sql = "INSERT INTO albums (album_id, album_name) VALUES (?, ?)";
     try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-      stmt.setString(1, albumName);
+      stmt.setInt(1, Integer.parseInt(albumData[1]));
+      stmt.setString(2, albumData[0]);
       stmt.executeUpdate();
     }
   }
