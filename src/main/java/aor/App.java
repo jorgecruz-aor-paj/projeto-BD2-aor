@@ -85,7 +85,7 @@ public class App implements AutoCloseable {
                 trackStmt.setInt(1, albumId);
                 try (var rs = trackStmt.executeQuery()) {
                     if (rs.next()) {
-                        song.setTrackNumber(rs.getInt("Proxima_faixa"));
+                        song.setTrackNumber(rs.getInt("next_track"));
                     }
                 }
             }
